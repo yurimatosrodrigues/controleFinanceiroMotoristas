@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'veiculos.dart';
 
 class TelaCadastroVeiculo extends StatefulWidget {
   @override
@@ -6,6 +7,9 @@ class TelaCadastroVeiculo extends StatefulWidget {
 }
 
 class _TelaCadastroVeiculoState extends State<TelaCadastroVeiculo> {
+  Marca marcas = new Marca();
+  //Map listaMarcas = marcas.getMarcas();
+
   List<String> tipoVeiculo = ['Carro', 'Moto'];
   List<String> marcaVeiculo = ['Audi', 'BMW', 'Chevrolet', 'Fiat', 'Ford', 'Renault'];
   List<String> modeloVeiculo = ['Onix', 'Prisma', 'Chevrolet', 'Cruze', 'Spin'];
