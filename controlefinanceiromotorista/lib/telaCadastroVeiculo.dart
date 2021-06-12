@@ -12,28 +12,181 @@ class _TelaCadastroVeiculoState extends State<TelaCadastroVeiculo> {
   List<String> corVeiculo = ['Branco', 'Preto', 'Cinza', 'Azul', 'Vermelho'];
   List<String> tipoCombustivel = ['Álcool', 'Gás', 'Gasolina', 'Flex'];
 
-  String valueDropDownTipoVeiculo = 'Carro';
-  String valueDropDownMarca = 'Chevrolet';
-  String valueDropDownModelo = 'Onix';
-  String valueDropDownCor = 'Branco';
-  String valueDropDownCombustivel = 'Flex';
+  String valueDropDownTipoVeiculo;
+  String valueDropDownMarca;
+  String valueDropDownModelo;
+  String valueDropDownCor;
+  String valueDropDownCombustivel;
 
    final ButtonStyle style =
         ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 15));
 
   Widget _buildAnimacao(){
+    return Container(      
+      width: 350,
+      height: 70,        
+      decoration: BoxDecoration(
+        shape: BoxShape.rectangle,                
+        image: DecorationImage(image: AssetImage('images/car.png'))
+      ),
+    );
+  }  
+
+  Widget _buildTipoVeiculo(){
     return Container(
-                width: 80,
-                height: 80,
-             /*   decoration: BoxDecoration(
-                  color: Colors.green,
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                        image: AssetImage('images/car.jpg')
-                    )
-                ),*/
-              );
+      padding: EdgeInsets.only(left: 16, right: 16, top: 5),
+      width: 365, height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(7)
+      ),
+      child: DropdownButton(
+        hint: Text('Selecione o tipo do veículo'),
+        dropdownColor: Colors.grey.shade300,
+        value: valueDropDownTipoVeiculo,
+        isExpanded: true,
+        underline: SizedBox(),
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 34,
+        onChanged: (String newValue) {
+          setState(() {
+            valueDropDownTipoVeiculo = newValue;
+          });
+        },
+        items: tipoVeiculo
+        .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value));
+          }).toList()
+      ),
+    );
   }
+
+  Widget _buildMarca(){
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 5),
+      width: 365, height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(7)
+      ),
+      child: DropdownButton(
+        hint: Text('Selecione a marca'),
+        dropdownColor: Colors.grey.shade300,
+        value: valueDropDownMarca,
+        isExpanded: true,
+        underline: SizedBox(),
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 34,
+        onChanged: (String newValue) {
+          setState(() {
+            valueDropDownMarca = newValue;
+          });
+        },
+        items: marcaVeiculo
+        .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value));
+          }).toList()
+      ),
+    );
+  }
+
+  Widget _buildModelo(){
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 5),
+      width: 365, height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(7)
+      ),
+      child: DropdownButton(
+        hint: Text('Selecione o modelo'),
+        dropdownColor: Colors.grey.shade300,
+        value: valueDropDownModelo,
+        isExpanded: true,
+        underline: SizedBox(),
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 34,
+        onChanged: (String newValue) {
+          setState(() {
+            valueDropDownModelo = newValue;
+          });
+        },
+        items: modeloVeiculo
+        .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value));
+          }).toList()
+      ),
+    );
+  }
+  
+  Widget _buildCor(){
+     return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 5),
+      width: 365, height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(7)
+      ),
+      child: DropdownButton(
+        hint: Text('Selecione a cor'),
+        dropdownColor: Colors.grey.shade300,
+        value: valueDropDownCor,
+        isExpanded: true,
+        underline: SizedBox(),
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 34,
+        onChanged: (String newValue) {
+          setState(() {
+            valueDropDownCor = newValue;
+          });
+        },
+        items: corVeiculo
+        .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value));
+          }).toList()
+      ),
+    );    
+  }
+
+  Widget _buildCombustivel(){
+     return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 5),
+      width: 365, height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1),
+        borderRadius: BorderRadius.circular(7)
+      ),
+      child: DropdownButton(
+        hint: Text('Selecione o tipo de combustível'),
+        dropdownColor: Colors.grey.shade300,
+        value: valueDropDownCombustivel,
+        isExpanded: true,
+        underline: SizedBox(),
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 34,
+        onChanged: (String newValue) {
+          setState(() {
+            valueDropDownCombustivel = newValue;
+          });
+        },
+        items: tipoCombustivel
+        .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value));
+          }).toList()
+      ),
+    );
+  }
+
   Widget _buildPlaca(){
     return TextField(      
       decoration: InputDecoration(
@@ -44,122 +197,7 @@ class _TelaCadastroVeiculoState extends State<TelaCadastroVeiculo> {
       style: TextStyle(color: Colors.black),
     );
   }
-  Widget _buildTipoVeiculo(){
-    return DropdownButton(
-      value: valueDropDownTipoVeiculo,
-      icon: const Icon(Icons.arrow_downward),
-      style: const TextStyle(color: Colors.indigoAccent),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: (String newValue) {
-        setState(() {
-          valueDropDownTipoVeiculo = newValue;
-        });
-      },
-      items: tipoVeiculo
-      .map<DropdownMenuItem<String>>((String value) {
-    return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value));
-  }).toList());
-  }
-  Widget _buildMarca(){
-    return DropdownButton(
-      value: valueDropDownMarca,
-      icon: const Icon(Icons.arrow_downward),
-      style: const TextStyle(color: Colors.indigoAccent),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: (String newValue) {
-        setState(() {
-          valueDropDownMarca = newValue;
-        });
-      },
-      items: marcaVeiculo
-      .map<DropdownMenuItem<String>>((String value) {
-    return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value));
-    }).toList());
-  }
 
-  Widget _buildModelo(){
-    return DropdownButton(
-      value: valueDropDownModelo,
-      icon: const Icon(Icons.arrow_downward),
-      style: const TextStyle(color: Colors.indigoAccent),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: (String newValue) {
-        setState(() {
-          valueDropDownModelo = newValue;
-        });
-      },
-      items: modeloVeiculo
-      .map<DropdownMenuItem<String>>((String value) {
-    return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value));
-    }).toList());
-  }
-  Widget _buildCor(){
-    return DropdownButton(
-      value: valueDropDownCor,
-      icon: const Icon(Icons.arrow_downward),
-      style: const TextStyle(color: Colors.indigoAccent),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: (String newValue) {
-        setState(() {
-          valueDropDownCor = newValue;
-        });
-      },
-      items: corVeiculo
-      .map<DropdownMenuItem<String>>((String value) {
-    return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value));
-  }).toList());
-  }
-  Widget _buildCombustivel(){
-    return  DropdownButton(
-      value: valueDropDownCombustivel,
-      icon: const Icon(Icons.arrow_downward),
-      style: const TextStyle(color: Colors.indigoAccent),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
-      iconSize: 24,
-      elevation: 16,
-      onChanged: (String newValue) {
-        setState(() {
-          valueDropDownCombustivel = newValue;
-        });
-      },
-      items: tipoCombustivel
-      .map<DropdownMenuItem<String>>((String value) {
-    return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value));
-  }).toList());
-  }
   Widget _buildAno(){
     return TextField(              
       decoration: InputDecoration(
@@ -170,6 +208,7 @@ class _TelaCadastroVeiculoState extends State<TelaCadastroVeiculo> {
       style: TextStyle(color: Colors.black),
     );
   }
+
   Widget _buildMediaKM(){
     return TextField(
       decoration: InputDecoration(
@@ -194,40 +233,42 @@ class _TelaCadastroVeiculoState extends State<TelaCadastroVeiculo> {
 
         body: SingleChildScrollView(
           child: Container(
-            margin: EdgeInsets.all(12.5),
-            child: Form(
+            margin: EdgeInsets.all(12.5),            
+            child: Form(              
               child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,            
+            crossAxisAlignment: CrossAxisAlignment.center,            
 
             children: <Widget>[
-              _buildAnimacao(),
-              _buildPlaca(),
-              Divider(),
-              _buildTipoVeiculo(),
-              Divider(),
-
-              Text('Marca'),
+              _buildAnimacao(),              
+              SizedBox(height: 15),
+              _buildTipoVeiculo(),              
+              SizedBox(height: 15),              
               _buildMarca(),
-
-              Divider(),
-              Text('Modelo'),
+              SizedBox(height: 15),              
               _buildModelo(),
-              Divider(),
-              Text('Cor'),
+              SizedBox(height: 15),              
               _buildCor(),
-              Divider(),
-              Text('Combustível'),
+              SizedBox(height: 15),              
               _buildCombustivel(),
-              Divider(),
+              SizedBox(height: 15),              
+              _buildPlaca(),
+              SizedBox(height: 15),
               _buildAno(),
-              Divider(),
-              _buildMediaKM(),            
+              SizedBox(height: 15),
+              _buildMediaKM(),              
+              SizedBox(height: 15),
 
-              ElevatedButton(
-              style: style,
-              onPressed: () {},
-              child: const Text('Salvar'),              
+              Container(  
+                alignment: Alignment.bottomCenter,
+                width: 140,
+                height: 40,
+                child: ElevatedButton(
+                  style: style,
+                  onPressed: () {},
+                  child: const Text('Salvar'),              
+              ),
               )
+
               
               ],
 
