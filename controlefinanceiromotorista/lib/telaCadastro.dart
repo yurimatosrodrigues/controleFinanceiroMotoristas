@@ -51,6 +51,11 @@ class _telaCadastro extends State<telaCadastro> {
               decoration: InputDecoration(labelText: "E-mail:"),
               keyboardType: TextInputType.emailAddress,
             ),
+            TextFormField(
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Senha:',
+              ),),
             TextField(
               decoration: InputDecoration(labelText: "Telefone:"),
               keyboardType: TextInputType.phone,
