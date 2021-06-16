@@ -14,11 +14,13 @@ class CondutorHelper {
         List<Condutor> condutores =
             body.map((dynamic map) => Condutor.from(map));
         return condutores;
+      } else if (response.statusCode == 403) {
+        throw response.body;
       } else {
-        throw Exception('Falha ao carregar os condutores');
+        throw 'Falha ao carregar os condutores';
       }
     } catch (e) {
-      throw e;
+      throw e.toString();
     }
   }
 
@@ -29,11 +31,13 @@ class CondutorHelper {
       if (response.statusCode == 200) {
         dynamic body = json.decode(response.body);
         return Condutor.from(body);
+      } else if (response.statusCode == 403) {
+        throw response.body;
       } else {
-        throw Exception('Falha ao carregar o condutor');
+        throw 'Falha ao carregar o condutor';
       }
     } catch (e) {
-      throw e;
+      throw e.toString();
     }
   }
 
@@ -44,11 +48,13 @@ class CondutorHelper {
       if (response.statusCode == 200) {
         dynamic body = json.decode(response.body);
         return Condutor.from(body);
+      } else if (response.statusCode == 403) {
+        throw "O login ou a senha estão incorretos!";
       } else {
-        throw Exception('Falha ao carregar o condutor');
+        throw 'Falha ao carregar o condutor';
       }
     } catch (e) {
-      throw e;
+      throw e.toString();
     }
   }
 
@@ -63,11 +69,13 @@ class CondutorHelper {
       if (response.statusCode == 200) {
         dynamic body = json.decode(response.body);
         return Condutor.from(body);
+      } else if (response.statusCode == 403) {
+        throw response.body;
       } else {
-        throw Exception('Falha ao salvar o condutor');
+        throw 'Falha ao salvar o condutor';
       }
     } catch (e) {
-      throw e;
+      throw e.toString();
     }
   }
 
@@ -82,8 +90,10 @@ class CondutorHelper {
       if (response.statusCode == 200) {
         dynamic body = json.decode(response.body);
         return Condutor.from(body);
+      } else if (response.statusCode == 403) {
+        throw response.body;
       } else {
-        throw Exception('Falha ao atualizar o condutor');
+        throw 'Falha ao atualizar o condutor';
       }
     } catch (e) {
       throw e;
@@ -99,10 +109,10 @@ class CondutorHelper {
           },
           body: json.encode(map));
       if (response.statusCode != 200) {
-        throw Exception('Falha ao atualizar o condutor');
+        throw 'Falha ao remover o condutor';
       }
     } catch (e) {
-      throw e;
+      throw e.toString();
     }
   }
 }
