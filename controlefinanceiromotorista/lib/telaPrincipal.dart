@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
 import 'package:controlefinanceiromotorista/telaCadastro.dart';
-import 'package:flutter/material.dart';
 
 class telaPrincipal extends StatefulWidget {
   final Condutor condutor;
@@ -65,7 +66,9 @@ class _telaPrincipalState extends State<telaPrincipal> {
                   ),
                 );
                 if (condutor != null) {
-                  _condutor = condutor;
+                  setState(() {
+                    _condutor = condutor;
+                  });
                 }
               },
             ),

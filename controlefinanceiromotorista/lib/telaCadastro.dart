@@ -1,9 +1,12 @@
 import 'dart:convert';
 
-import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
+
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -35,20 +38,20 @@ class _telaCadastro extends State<telaCadastro> {
   TextEditingController _endEstadoController = TextEditingController();
   TextEditingController _endComplementoController = TextEditingController();
 
-  FocusNode _nomeFocus = FocusNode();
-  FocusNode _sobrenomeFocus = FocusNode();
-  FocusNode _emailFocus = FocusNode();
-  FocusNode _senhaFocus = FocusNode();
-  FocusNode _telefoneFocus = FocusNode();
-  FocusNode _endCepFocus = FocusNode();
-  FocusNode _endLogradouroFocus = FocusNode();
-  FocusNode _endNumeroFocus = FocusNode();
-  FocusNode _endBairroFocus = FocusNode();
-  FocusNode _endCidadeFocus = FocusNode();
-  FocusNode _endEstadoFocus = FocusNode();
-  FocusNode _endComplementoFocus = FocusNode();
+  final FocusNode _nomeFocus = FocusNode();
+  final FocusNode _sobrenomeFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _senhaFocus = FocusNode();
+  final FocusNode _telefoneFocus = FocusNode();
+  final FocusNode _endCepFocus = FocusNode();
+  final FocusNode _endLogradouroFocus = FocusNode();
+  final FocusNode _endNumeroFocus = FocusNode();
+  final FocusNode _endBairroFocus = FocusNode();
+  final FocusNode _endCidadeFocus = FocusNode();
+  final FocusNode _endEstadoFocus = FocusNode();
+  final FocusNode _endComplementoFocus = FocusNode();
 
-  DateFormat formatterDate = DateFormat("dd/MM/yyyy");
+  final DateFormat formatterDate = DateFormat("dd/MM/yyyy");
 
   bool _saving = false;
 
@@ -109,7 +112,9 @@ class _telaCadastro extends State<telaCadastro> {
                     ),
                   ),
                 ),
-                onTap: () {},
+                onTap: () {
+                  _changePicture(context);
+                },
               ),
               TextField(
                 keyboardType: TextInputType.name,
@@ -261,6 +266,81 @@ class _telaCadastro extends State<telaCadastro> {
         ),
       ),
     );
+  }
+
+  void _changePicture(context) {
+    final ImagePicker _picker = ImagePicker();
+
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Galeria'),
+                      onTap: () {
+                        _picker
+                            .getImage(
+                                source: ImageSource.gallery,
+                                imageQuality: 50,
+                                maxHeight: 600,
+                                maxWidth: 900)
+                            .then((file) {
+                          if (file == null) return;
+                          setState(() {
+                            file
+                                .readAsBytes()
+                                .then((value) =>
+                                    _condutor.imagem = base64Encode(value))
+                                .catchError((e) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "Ocorreu um erro ao carregar a imagem!"),
+                                duration: new Duration(seconds: 1),
+                              ));
+                            });
+                          });
+                        });
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Câmera'),
+                    onTap: () {
+                      _picker
+                          .getImage(
+                              source: ImageSource.camera,
+                              imageQuality: 50,
+                              maxHeight: 600,
+                              maxWidth: 900)
+                          .then((file) {
+                        if (file == null) return;
+                        setState(() {
+                          file
+                              .readAsBytes()
+                              .then((value) =>
+                                  _condutor.imagem = base64Encode(value))
+                              .catchError((e) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text("Ocorreu um erro ao carregar a imagem!"),
+                              duration: new Duration(seconds: 1),
+                            ));
+                          });
+                        });
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   void _saveCondutor() {
