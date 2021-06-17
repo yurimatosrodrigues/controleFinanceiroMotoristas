@@ -1,90 +1,381 @@
-import 'dart:ffi';
-import 'dart:io';
+import 'dart:convert';
 
+import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class telaCadastro extends StatefulWidget {
+  final Condutor condutor;
+
+  telaCadastro({this.condutor});
+
   @override
   _telaCadastro createState() => _telaCadastro();
 }
 
 class _telaCadastro extends State<telaCadastro> {
+  final CondutorHelper _helper = new CondutorHelper();
+
+  Condutor _condutor;
+
+  TextEditingController _nomeController = TextEditingController();
+  TextEditingController _sobrenomeController = TextEditingController();
+  TextEditingController _dataNascController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _senhaController = TextEditingController();
+  TextEditingController _telefoneController = TextEditingController();
+  TextEditingController _endCepController = TextEditingController();
+  TextEditingController _endLogradouroController = TextEditingController();
+  TextEditingController _endNumeroController = TextEditingController();
+  TextEditingController _endBairroController = TextEditingController();
+  TextEditingController _endCidadeController = TextEditingController();
+  TextEditingController _endEstadoController = TextEditingController();
+  TextEditingController _endComplementoController = TextEditingController();
+
+  FocusNode _nomeFocus = FocusNode();
+  FocusNode _sobrenomeFocus = FocusNode();
+  FocusNode _emailFocus = FocusNode();
+  FocusNode _senhaFocus = FocusNode();
+  FocusNode _telefoneFocus = FocusNode();
+  FocusNode _endCepFocus = FocusNode();
+  FocusNode _endLogradouroFocus = FocusNode();
+  FocusNode _endNumeroFocus = FocusNode();
+  FocusNode _endBairroFocus = FocusNode();
+  FocusNode _endCidadeFocus = FocusNode();
+  FocusNode _endEstadoFocus = FocusNode();
+  FocusNode _endComplementoFocus = FocusNode();
+
+  DateFormat formatterDate = DateFormat("dd/MM/yyyy");
+
+  bool _saving = false;
+
   @override
   void initState() {
     super.initState();
+    if (widget.condutor != null) {
+      _condutor = Condutor.from(widget.condutor.toMap());
+
+      _nomeController.text = _condutor.nome;
+      _sobrenomeController.text = _condutor.sobrenome;
+      _dataNascController.text = formatterDate.format(_condutor.dataNascimento);
+      _emailController.text = _condutor.email;
+      _senhaController.text = _condutor.senha;
+      _telefoneController.text = _condutor.telefone;
+      _endCepController.text = _condutor.enderecoCep;
+      _endLogradouroController.text = _condutor.enderecoLogradouro;
+      _endNumeroController.text = _condutor.enderecoNumero;
+      _endBairroController.text = _condutor.enderecoBairro;
+      _endCidadeController.text = _condutor.enderecoCidade;
+      _endEstadoController.text = _condutor.enderecoEstado;
+      _endComplementoController.text = _condutor.enderecoComplemento;
+    } else {
+      _condutor = new Condutor();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Preencha seus dados pessoais"),
+        title: Text(_condutor.nome ?? "Preencha seus dados pessoais"),
         backgroundColor: Colors.grey,
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {}, label: Text("Avançar")),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              child: Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
+        onPressed: _saveCondutor,
+        label: Text("Avançar"),
+      ),
+      body: ModalProgressHUD(
+        inAsyncCall: _saving,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              GestureDetector(
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: AssetImage("images/person.png"),
-                    )),
+                      image: _condutor.imagem != null &&
+                              _condutor.imagem.isNotEmpty
+                          ? MemoryImage(base64Decode(_condutor.imagem))
+                          : AssetImage("images/person.png"),
+                    ),
+                  ),
+                ),
+                onTap: () {},
               ),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Nome Completo:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Data de Nascimento:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "E-mail:"),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextFormField(
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Senha:',
-              ),),
-            TextField(
-              decoration: InputDecoration(labelText: "Telefone:"),
-              keyboardType: TextInputType.phone,
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "CEP:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Logradouro:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Nº:"),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Bairro:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Cidade:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "UF:"),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: "Complemento:"),
-            ),
-          ],
+              TextField(
+                keyboardType: TextInputType.name,
+                decoration: InputDecoration(labelText: "Nome:"),
+                controller: _nomeController,
+                focusNode: _nomeFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.nome = text;
+                  });
+                },
+              ),
+              TextField(
+                keyboardType: TextInputType.name,
+                decoration: InputDecoration(labelText: "Sobrenome:"),
+                controller: _sobrenomeController,
+                focusNode: _sobrenomeFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.sobrenome = text;
+                  });
+                },
+              ),
+              DateTimeField(
+                decoration: InputDecoration(labelText: "Data de Nascimento:"),
+                controller: _dataNascController,
+                format: formatterDate,
+                onShowPicker: (ctx, currentValue) {
+                  return showDatePicker(
+                      context: ctx,
+                      firstDate: DateTime(1900),
+                      initialDate: currentValue ?? DateTime.now(),
+                      lastDate: DateTime.now());
+                },
+                onChanged: (date) {
+                  setState(() {
+                    _condutor.dataNascimento = date;
+                  });
+                },
+              ),
+              TextField(
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(labelText: "E-mail:"),
+                controller: _emailController,
+                focusNode: _emailFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.email = text;
+                  });
+                },
+              ),
+              TextFormField(
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: InputDecoration(labelText: 'Senha:'),
+                controller: _senhaController,
+                focusNode: _senhaFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.senha = text;
+                  });
+                },
+              ),
+              TextField(
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(labelText: "Telefone:"),
+                controller: _telefoneController,
+                focusNode: _telefoneFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.telefone = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "CEP:"),
+                controller: _endCepController,
+                focusNode: _endCepFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoCep = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Logradouro:"),
+                controller: _endLogradouroController,
+                focusNode: _endLogradouroFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoLogradouro = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Nº:"),
+                keyboardType: TextInputType.number,
+                controller: _endNumeroController,
+                focusNode: _endNumeroFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoNumero = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Bairro:"),
+                controller: _endBairroController,
+                focusNode: _endBairroFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoBairro = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Cidade:"),
+                controller: _endCidadeController,
+                focusNode: _endCidadeFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoCidade = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "UF:"),
+                controller: _endEstadoController,
+                focusNode: _endEstadoFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoEstado = text;
+                  });
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Complemento:"),
+                controller: _endComplementoController,
+                focusNode: _endComplementoFocus,
+                onChanged: (text) {
+                  setState(() {
+                    _condutor.enderecoComplemento = text;
+                  });
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _saveCondutor() {
+    if (_condutor.nome == null || _condutor.nome.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O nome deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_nomeFocus);
+      return;
+    }
+    if (_condutor.sobrenome == null || _condutor.sobrenome.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O sobrenome deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_sobrenomeFocus);
+      return;
+    }
+    if (_condutor.dataNascimento == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("A data de nascimento deve ser preenchida!"),
+        duration: new Duration(seconds: 1),
+      ));
+      return;
+    }
+    if (_condutor.email == null || _condutor.email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O email deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_emailFocus);
+      return;
+    }
+    if (_condutor.senha == null || _condutor.senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("A senha deve ser preenchida!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_senhaFocus);
+      return;
+    }
+    if (_condutor.telefone == null || _condutor.telefone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O telefone deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_telefoneFocus);
+      return;
+    }
+    if (_condutor.enderecoCep == null || _condutor.enderecoCep.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O CEP deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endCepFocus);
+      return;
+    }
+    if (_condutor.enderecoLogradouro == null ||
+        _condutor.enderecoLogradouro.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O logradouro deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endLogradouroFocus);
+      return;
+    }
+    if (_condutor.enderecoNumero == null || _condutor.enderecoNumero.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O número deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endNumeroFocus);
+      return;
+    }
+    if (_condutor.enderecoBairro == null || _condutor.enderecoBairro.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O bairro deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endBairroFocus);
+      return;
+    }
+    if (_condutor.enderecoCidade == null || _condutor.enderecoCidade.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("A cidade deve ser preenchida!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endCidadeFocus);
+      return;
+    }
+    if (_condutor.enderecoEstado == null || _condutor.enderecoEstado.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O estado deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endEstadoFocus);
+      return;
+    }
+    setState(() {
+      _saving = true;
+    });
+    _helper.saveCondutor(_condutor).then((value) {
+      setState(() {
+        _saving = false;
+      });
+      Navigator.pop(context, _condutor);
+    }).catchError((e) {
+      setState(() {
+        _saving = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e),
+        duration: new Duration(seconds: 3),
+      ));
+    });
   }
 }

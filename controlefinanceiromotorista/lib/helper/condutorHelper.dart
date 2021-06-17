@@ -1,6 +1,8 @@
-import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class CondutorHelper {
   String apiUrl =
@@ -10,12 +12,12 @@ class CondutorHelper {
     try {
       http.Response response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
-        List<dynamic> body = json.decode(response.body);
+        List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
         List<Condutor> condutores =
             body.map((dynamic map) => Condutor.from(map));
         return condutores;
       } else if (response.statusCode == 403) {
-        throw response.body;
+        throw utf8.decode(response.bodyBytes);
       } else {
         throw 'Falha ao carregar os condutores';
       }
@@ -29,10 +31,10 @@ class CondutorHelper {
       http.Response response =
           await http.get(Uri.parse(apiUrl + '/' + id.toString()));
       if (response.statusCode == 200) {
-        dynamic body = json.decode(response.body);
+        dynamic body = json.decode(utf8.decode(response.bodyBytes));
         return Condutor.from(body);
       } else if (response.statusCode == 403) {
-        throw response.body;
+        throw utf8.decode(response.bodyBytes);
       } else {
         throw 'Falha ao carregar o condutor';
       }
@@ -46,7 +48,7 @@ class CondutorHelper {
       http.Response response =
           await http.get(Uri.parse(apiUrl + '/email/' + email));
       if (response.statusCode == 200) {
-        dynamic body = json.decode(response.body);
+        dynamic body = json.decode(utf8.decode(response.bodyBytes));
         return Condutor.from(body);
       } else if (response.statusCode == 403) {
         throw "O login ou a senha estão incorretos!";
@@ -67,10 +69,10 @@ class CondutorHelper {
           },
           body: json.encode(map));
       if (response.statusCode == 200) {
-        dynamic body = json.decode(response.body);
+        dynamic body = json.decode(utf8.decode(response.bodyBytes));
         return Condutor.from(body);
       } else if (response.statusCode == 403) {
-        throw response.body;
+        throw utf8.decode(response.bodyBytes);
       } else {
         throw 'Falha ao salvar o condutor';
       }
@@ -88,15 +90,27 @@ class CondutorHelper {
           },
           body: json.encode(map));
       if (response.statusCode == 200) {
-        dynamic body = json.decode(response.body);
+        dynamic body = json.decode(utf8.decode(response.bodyBytes));
         return Condutor.from(body);
       } else if (response.statusCode == 403) {
-        throw response.body;
+        throw utf8.decode(response.bodyBytes);
       } else {
         throw 'Falha ao atualizar o condutor';
       }
     } catch (e) {
       throw e;
+    }
+  }
+
+  Future<Condutor> saveCondutor(Condutor condutor) async {
+    try {
+      if (condutor.id == null) {
+        return createCondutor(condutor);
+      } else {
+        return updateCondutor(condutor);
+      }
+    } catch (e) {
+      throw e.toString();
     }
   }
 
@@ -189,7 +203,7 @@ class Condutor {
     Map<String, Object> map = {
       'nome': nome,
       'sobrenome': sobrenome,
-      'dataNascimento': dataNascimento,
+      'dataNascimento': DateFormat("yyyy-MM-dd").format(dataNascimento),
       'email': email,
       'senha': senha,
       'telefone': telefone,

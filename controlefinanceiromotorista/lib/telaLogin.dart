@@ -13,21 +13,33 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   final CondutorHelper _helper = new CondutorHelper();
+
   TextEditingController _loginController = TextEditingController();
   TextEditingController _senhaController = TextEditingController();
+
   FocusNode _loginFocus = FocusNode();
   FocusNode _senhaFocus = FocusNode();
+
   bool _saving = false;
 
   void _onLoginPressed() {
     String login = _loginController.text;
     if (login == null || login.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O login deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
       FocusScope.of(context).requestFocus(_loginFocus);
       return;
     }
     String senha = _senhaController.text;
     if (senha == null || senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("A senha deve ser preenchida!"),
+        duration: new Duration(seconds: 1),
+      ));
       FocusScope.of(context).requestFocus(_senhaFocus);
       return;
     }
@@ -41,7 +53,10 @@ class _HomeState extends State<Home> {
       if (senha == condutor.senha) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (ctx) => telaPrincipal()),
+          MaterialPageRoute(
+              builder: (ctx) => telaPrincipal(
+                    condutor: condutor,
+                  )),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
