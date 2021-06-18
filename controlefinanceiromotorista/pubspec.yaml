@@ -23,11 +23,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  dropdownfield: 1.0.0
   http: ^0.13.0
   modal_progress_hud: ^0.1.3
   datetime_picker_formfield: ^2.0.0
@@ -54,6 +57,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
     - images/person.png
     - images/car.png
+    - assets/json/estados_cidades.json
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

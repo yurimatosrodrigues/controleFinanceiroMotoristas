@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:controlefinanceiromotorista/helper/cepHelper.dart';
+import 'package:controlefinanceiromotorista/helper/localHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
 
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:dropdownfield/dropdownfield.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -20,9 +23,13 @@ class telaCadastro extends StatefulWidget {
 }
 
 class _telaCadastro extends State<telaCadastro> {
-  final CondutorHelper _helper = new CondutorHelper();
+  final CondutorHelper _condutorHelper = new CondutorHelper();
+  final CepHelper _cepHelper = new CepHelper();
 
   Condutor _condutor;
+
+  List<String> _estados = [];
+  List<String> _cidades = [];
 
   TextEditingController _nomeController = TextEditingController();
   TextEditingController _sobrenomeController = TextEditingController();
@@ -31,11 +38,11 @@ class _telaCadastro extends State<telaCadastro> {
   TextEditingController _senhaController = TextEditingController();
   TextEditingController _telefoneController = TextEditingController();
   TextEditingController _endCepController = TextEditingController();
+  TextEditingController _endEstadoController = TextEditingController();
+  TextEditingController _endCidadeController = TextEditingController();
+  TextEditingController _endBairroController = TextEditingController();
   TextEditingController _endLogradouroController = TextEditingController();
   TextEditingController _endNumeroController = TextEditingController();
-  TextEditingController _endBairroController = TextEditingController();
-  TextEditingController _endCidadeController = TextEditingController();
-  TextEditingController _endEstadoController = TextEditingController();
   TextEditingController _endComplementoController = TextEditingController();
 
   final FocusNode _nomeFocus = FocusNode();
@@ -44,11 +51,11 @@ class _telaCadastro extends State<telaCadastro> {
   final FocusNode _senhaFocus = FocusNode();
   final FocusNode _telefoneFocus = FocusNode();
   final FocusNode _endCepFocus = FocusNode();
+  final FocusNode _endEstadoFocus = FocusNode();
+  final FocusNode _endCidadeFocus = FocusNode();
+  final FocusNode _endBairroFocus = FocusNode();
   final FocusNode _endLogradouroFocus = FocusNode();
   final FocusNode _endNumeroFocus = FocusNode();
-  final FocusNode _endBairroFocus = FocusNode();
-  final FocusNode _endCidadeFocus = FocusNode();
-  final FocusNode _endEstadoFocus = FocusNode();
   final FocusNode _endComplementoFocus = FocusNode();
 
   final DateFormat formatterDate = DateFormat("dd/MM/yyyy");
@@ -68,15 +75,23 @@ class _telaCadastro extends State<telaCadastro> {
       _senhaController.text = _condutor.senha;
       _telefoneController.text = _condutor.telefone;
       _endCepController.text = _condutor.enderecoCep;
+      _endEstadoController.text = _condutor.enderecoEstado;
+      _endCidadeController.text = _condutor.enderecoCidade;
+      _endBairroController.text = _condutor.enderecoBairro;
       _endLogradouroController.text = _condutor.enderecoLogradouro;
       _endNumeroController.text = _condutor.enderecoNumero;
-      _endBairroController.text = _condutor.enderecoBairro;
-      _endCidadeController.text = _condutor.enderecoCidade;
-      _endEstadoController.text = _condutor.enderecoEstado;
       _endComplementoController.text = _condutor.enderecoComplemento;
     } else {
       _condutor = new Condutor();
     }
+    LocalHelper.loadCidadesEstados().then((value) {
+      setState(() {
+        _estados.clear();
+        _estados = LocalHelper.getEstados();
+        _cidades.clear();
+        _cidades = LocalHelper.getCidades(estado: _condutor.enderecoEstado);
+      });
+    });
   }
 
   @override
@@ -90,7 +105,7 @@ class _telaCadastro extends State<telaCadastro> {
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _saveCondutor,
-        label: Text("Avançar"),
+        label: Text("Salvar"),
       ),
       body: ModalProgressHUD(
         inAsyncCall: _saving,
@@ -191,37 +206,85 @@ class _telaCadastro extends State<telaCadastro> {
                 },
               ),
               TextField(
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(labelText: "CEP:"),
                 controller: _endCepController,
                 focusNode: _endCepFocus,
                 onChanged: (text) {
+                  if (text.length == 8) {
+                    _cepHelper.getCep(text).then((value) {
+                      if (_endEstadoController.text != value.uf) {
+                        _endEstadoController.text = value.uf;
+                        _cidades.clear();
+                        _cidades = LocalHelper.getCidades(estado: value.uf);
+                      }
+                      _endCidadeController.text = value.localidade;
+                      _endBairroController.text = value.bairro;
+                      _endLogradouroController.text = value.logradouro;
+                      _endComplementoController.text = value.complemento;
+                      setState(() {
+                        _condutor.enderecoEstado = value.uf;
+                        _condutor.enderecoCidade = value.localidade;
+                        _condutor.enderecoBairro = value.bairro;
+                        _condutor.enderecoLogradouro = value.logradouro;
+                        _condutor.enderecoComplemento = value.complemento;
+                      });
+                    }).catchError((e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(e),
+                        duration: new Duration(seconds: 1),
+                      ));
+                    });
+                  }
                   setState(() {
                     _condutor.enderecoCep = text;
                   });
                 },
               ),
-              TextField(
-                decoration: InputDecoration(labelText: "Logradouro:"),
-                controller: _endLogradouroController,
-                focusNode: _endLogradouroFocus,
-                onChanged: (text) {
-                  setState(() {
-                    _condutor.enderecoLogradouro = text;
-                  });
+              DropDownField(
+                controller: _endEstadoController,
+                value: _condutor.enderecoEstado,
+                strict: true,
+                labelText: 'UF:',
+                labelStyle: TextStyle(decoration: TextDecoration.none),
+                textStyle: TextStyle(
+                  fontSize: 16.0,
+                  fontStyle: FontStyle.normal,
+                ),
+                items: _estados,
+                onValueChanged: (value) {
+                  if (_condutor.enderecoEstado != value) {
+                    _endCidadeController.text = "";
+                    setState(() {
+                      _condutor.enderecoEstado = value;
+                      _condutor.enderecoCidade = null;
+                      _cidades.clear();
+                      _cidades = LocalHelper.getCidades(estado: value);
+                    });
+                  }
+                },
+              ),
+              DropDownField(
+                controller: _endCidadeController,
+                value: _condutor.enderecoCidade,
+                strict: true,
+                labelStyle: TextStyle(decoration: TextDecoration.none),
+                labelText: 'Cidade:',
+                textStyle: TextStyle(
+                  fontSize: 16.0,
+                  fontStyle: FontStyle.normal,
+                ),
+                items: _cidades,
+                onValueChanged: (value) {
+                  if (_condutor.enderecoCidade != value) {
+                    setState(() {
+                      _condutor.enderecoCidade = value;
+                    });
+                  }
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: "Nº:"),
-                keyboardType: TextInputType.number,
-                controller: _endNumeroController,
-                focusNode: _endNumeroFocus,
-                onChanged: (text) {
-                  setState(() {
-                    _condutor.enderecoNumero = text;
-                  });
-                },
-              ),
-              TextField(
+                keyboardType: TextInputType.name,
                 decoration: InputDecoration(labelText: "Bairro:"),
                 controller: _endBairroController,
                 focusNode: _endBairroFocus,
@@ -232,26 +295,29 @@ class _telaCadastro extends State<telaCadastro> {
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: "Cidade:"),
-                controller: _endCidadeController,
-                focusNode: _endCidadeFocus,
+                keyboardType: TextInputType.name,
+                decoration: InputDecoration(labelText: "Logradouro:"),
+                controller: _endLogradouroController,
+                focusNode: _endLogradouroFocus,
                 onChanged: (text) {
                   setState(() {
-                    _condutor.enderecoCidade = text;
+                    _condutor.enderecoLogradouro = text;
                   });
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: "UF:"),
-                controller: _endEstadoController,
-                focusNode: _endEstadoFocus,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: "Nº:"),
+                controller: _endNumeroController,
+                focusNode: _endNumeroFocus,
                 onChanged: (text) {
                   setState(() {
-                    _condutor.enderecoEstado = text;
+                    _condutor.enderecoNumero = text;
                   });
                 },
               ),
               TextField(
+                keyboardType: TextInputType.name,
                 decoration: InputDecoration(labelText: "Complemento:"),
                 controller: _endComplementoController,
                 focusNode: _endComplementoFocus,
@@ -399,6 +465,30 @@ class _telaCadastro extends State<telaCadastro> {
       FocusScope.of(context).requestFocus(_endCepFocus);
       return;
     }
+    if (_condutor.enderecoEstado == null || _condutor.enderecoEstado.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O estado deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endEstadoFocus);
+      return;
+    }
+    if (_condutor.enderecoCidade == null || _condutor.enderecoCidade.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("A cidade deve ser preenchida!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endCidadeFocus);
+      return;
+    }
+    if (_condutor.enderecoBairro == null || _condutor.enderecoBairro.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("O bairro deve ser preenchido!"),
+        duration: new Duration(seconds: 1),
+      ));
+      FocusScope.of(context).requestFocus(_endBairroFocus);
+      return;
+    }
     if (_condutor.enderecoLogradouro == null ||
         _condutor.enderecoLogradouro.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -416,34 +506,10 @@ class _telaCadastro extends State<telaCadastro> {
       FocusScope.of(context).requestFocus(_endNumeroFocus);
       return;
     }
-    if (_condutor.enderecoBairro == null || _condutor.enderecoBairro.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("O bairro deve ser preenchido!"),
-        duration: new Duration(seconds: 1),
-      ));
-      FocusScope.of(context).requestFocus(_endBairroFocus);
-      return;
-    }
-    if (_condutor.enderecoCidade == null || _condutor.enderecoCidade.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("A cidade deve ser preenchida!"),
-        duration: new Duration(seconds: 1),
-      ));
-      FocusScope.of(context).requestFocus(_endCidadeFocus);
-      return;
-    }
-    if (_condutor.enderecoEstado == null || _condutor.enderecoEstado.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("O estado deve ser preenchido!"),
-        duration: new Duration(seconds: 1),
-      ));
-      FocusScope.of(context).requestFocus(_endEstadoFocus);
-      return;
-    }
     setState(() {
       _saving = true;
     });
-    _helper.saveCondutor(_condutor).then((value) {
+    _condutorHelper.saveCondutor(_condutor).then((value) {
       setState(() {
         _saving = false;
       });
