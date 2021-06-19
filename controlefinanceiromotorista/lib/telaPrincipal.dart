@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
 import 'package:controlefinanceiromotorista/telaCadastro.dart';
+import 'package:controlefinanceiromotorista/telaLancamento.dart';
 
 class telaPrincipal extends StatefulWidget {
   final Condutor condutor;
@@ -23,6 +24,11 @@ class _telaPrincipalState extends State<telaPrincipal> {
     if (widget.condutor != null) {
       _condutor = Condutor.from(widget.condutor.toMap());
     }
+  }
+
+  void _showTelaLancamentos() async{
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => TelaLancamento()));
   }
 
   @override
@@ -77,8 +83,20 @@ class _telaPrincipalState extends State<telaPrincipal> {
       ),
       appBar: AppBar(
         title: Text(("Tela Principal")),
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Container(),
+      body: Container(
+        child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            backgroundColor: Colors.blueAccent,
+            onPressed: (){
+              _showTelaLancamentos();
+            },
+
+          ),
+        )
+      ),
     );
   }
 }
