@@ -85,9 +85,9 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text(
           "Login",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blueAccent,
         centerTitle: true,
       ),
       body: ModalProgressHUD(

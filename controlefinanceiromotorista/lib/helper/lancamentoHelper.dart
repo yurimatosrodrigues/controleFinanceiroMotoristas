@@ -6,5 +6,5 @@ class LancamentoHelper{
 }
 
 class Lancamento{
-
+  Lancamento();
 }

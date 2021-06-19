@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
+
 
 class TelaLancamento extends StatefulWidget {
   @override
   _TelaLancamentoState createState() => _TelaLancamentoState();
 }
+
 
 class _TelaLancamentoState extends State<TelaLancamento> {
   List<String> service = ['Gasolina', 'Álcool', 'Corrida ETEC',
@@ -14,14 +18,17 @@ class _TelaLancamentoState extends State<TelaLancamento> {
   String valueDropDownService;
   String valueDropDownEntradaSaida;
 
-  DateTime _data;
+  final DateFormat _formatoData = DateFormat("dd/MM/yyyy");
+  final Color _corInformacao = Colors.blueGrey;
+  final Color _corValor = Colors.black;
+  final Color _corTema = Colors.blueAccent;
 
   Widget _buildIcon(){
     return Container(
       alignment: Alignment.center,
       child: Icon(
         Icons.monetization_on,
-        size: 80.0,
+        size: 90.0,
         color: Colors.green,
       ),
     );
@@ -36,7 +43,8 @@ class _TelaLancamentoState extends State<TelaLancamento> {
           borderRadius: BorderRadius.circular(7)
       ),
       child: DropdownButton(
-          hint: Text('Selecione o serviço desejado'),
+          hint: Text('Selecione o serviço desejado',
+            style: TextStyle(color: _corInformacao),),
           dropdownColor: Colors.grey.shade300,
           value: valueDropDownService,
           isExpanded: true,
@@ -67,7 +75,8 @@ class _TelaLancamentoState extends State<TelaLancamento> {
           borderRadius: BorderRadius.circular(7)
       ),
       child: DropdownButton(
-          hint: Text('Selecione <Entrada> ou <Saída>'),
+          hint: Text('Selecione <Entrada> ou <Saída>',
+            style: TextStyle(color: _corInformacao)),
           dropdownColor: Colors.grey.shade300,
           value: valueDropDownEntradaSaida,
           isExpanded: true,
@@ -91,38 +100,60 @@ class _TelaLancamentoState extends State<TelaLancamento> {
 
   Widget _buildValor(){
     return  TextField(
-      cursorColor: Colors.green,
+      cursorColor: _corTema,
       decoration: InputDecoration(
         labelText: 'Valor',
-        labelStyle: TextStyle(color: Colors.white),
+        labelStyle: TextStyle(color: _corInformacao),
         border: OutlineInputBorder(),
         prefixText: 'R\$',),
-      style: TextStyle(color: Colors.indigoAccent,),
-
+      style: TextStyle(color: _corValor,), //vermelho ou verde de acordo com a combo entrada/saida
       keyboardType: TextInputType.numberWithOptions(decimal:true),
     );
   }
 
   Widget _buildDescricao(){
     return TextField(
-      cursorColor: Colors.green,
+      cursorColor: _corTema,
       decoration: InputDecoration(
           labelText: "Descrição",
-          labelStyle: TextStyle(color: Colors.indigoAccent),
+          labelStyle: TextStyle(color: _corInformacao),
           border: OutlineInputBorder()
       ),
-      style: TextStyle(color: Colors.indigoAccent,)
+      style: TextStyle(color: _corValor,)
     );
   }
 
-
+  Widget _buildData(){
+    return Container(
+      child: DateTimeField(
+      decoration: InputDecoration(
+          labelText: 'Data da realização do serviço'),
+      format: _formatoData,
+      onShowPicker: (context, currentValue) {
+        return showDatePicker(
+            context: context,
+            firstDate: DateTime(2021),
+            initialDate: currentValue ?? DateTime.now(),
+            lastDate: DateTime.now());
+      },
+      onChanged: (date) {
+        setState(() {
+          //print('teste');// _condutor.dataNascimento = date;
+        });
+      },
+    ),);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Lançamentos'),),
-      body: SingleChildScrollView(
+      appBar: AppBar(title: Text('Lançamentos'), backgroundColor: _corTema,),
 
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.save)
+      ),
+
+      body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.all(12.5),
           child: Column(
@@ -132,18 +163,17 @@ class _TelaLancamentoState extends State<TelaLancamento> {
               SizedBox(height: 15),
               _buildService(),
               SizedBox(height: 15),
-               _buildEntradaSaida(),
-              //  SizedBox(height: 15),
-              // _buildValor(),
+              _buildEntradaSaida(),
               SizedBox(height: 15),
-              //_buildDescricao(),
-              // SizedBox(height: 15),
-
+              _buildValor(),
+              SizedBox(height: 15),
+              _buildDescricao(),
+              SizedBox(height: 15),
+              _buildData()
             ],
           ),
         ),
       )
-
     );
   }
 }

@@ -83,12 +83,13 @@ class _telaPrincipalState extends State<telaPrincipal> {
       ),
       appBar: AppBar(
         title: Text(("Tela Principal")),
+        backgroundColor: Colors.blueAccent,
       ),
       body: Container(
         child: Scaffold(
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
-            backgroundColor: Colors.indigoAccent,
+            backgroundColor: Colors.blueAccent,
             onPressed: (){
               _showTelaLancamentos();
             },
