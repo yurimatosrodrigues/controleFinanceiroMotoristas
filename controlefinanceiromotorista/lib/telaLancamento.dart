@@ -20,11 +20,8 @@ class _TelaLancamentoState extends State<TelaLancamento> {
   ServicoHelper servicoHelper = ServicoHelper();
   Lancamento _lancamento = Lancamento();
   
-  Servico servico1 = new Servico(1,'Combustível');
-  Servico servico2 = new Servico(2,'Gás');
-  Servico servico3 = new Servico(3,'Teste');
-
-  List<Servico> _service = [];  
+  List<Servico> _service = [];
+  Future<List<Servico>> _futureServicos;
 
   List<String> _entradaSaida = ['Entrada', 'Saída'];
 
@@ -40,9 +37,9 @@ class _TelaLancamentoState extends State<TelaLancamento> {
     super.initState();
     if (widget.lancamento != null){
     }
-    else{}   
-   
-      
+    else{}    
+    //_service.clear();   
+    _futureServicos = servicoHelper.getServicos();
   }
 
 
@@ -57,9 +54,9 @@ class _TelaLancamentoState extends State<TelaLancamento> {
     );
   }
 
-  Widget _buildService(){
+  Widget _buildService(){    
     return FutureBuilder<List<Servico>>(
-      future: servicoHelper.getServicos(),
+      future: _futureServicos,
       builder: (context, snapshot){
         switch(snapshot.connectionState){
           case ConnectionState.none:
@@ -69,8 +66,9 @@ class _TelaLancamentoState extends State<TelaLancamento> {
             if(snapshot.hasError){
               return Text('Erro ao carregar serviços.');
             }
-            else{
+            else{              
               _service = snapshot.data;
+              //if (valueDropDownService == null) { valueDropDownService = _service[0];}
               return Container(
                 padding: EdgeInsets.only(left: 16, right: 16, top: 5),
                 width: 365, height: 60,
@@ -78,7 +76,7 @@ class _TelaLancamentoState extends State<TelaLancamento> {
                     border: Border.all(color: Colors.grey, width: 1),
                     borderRadius: BorderRadius.circular(7)
                 ),
-                child: DropdownButton(                  
+                child: DropdownButton(                    
                     hint: Text('Selecione o serviço desejado',
                       style: TextStyle(color: _corInformacao),),
                     dropdownColor: Colors.grey.shade300,
@@ -87,16 +85,18 @@ class _TelaLancamentoState extends State<TelaLancamento> {
                     underline: SizedBox(),
                     icon: Icon(Icons.arrow_drop_down),
                     iconSize: 34,
-                    onChanged: (Servico newValue) {
-                      setState(() {
-                        valueDropDownService = newValue;
-                      });
-                    },
+                    onChanged: (Servico servico) {
+                      if(servico != null){
+                        setState(() {                                                  
+                          valueDropDownService = servico;                        
+                      });                          
+                      }                     
+                    }, 
                     items: _service
                         .map<DropdownMenuItem<Servico>>((Servico value) {
-                      return DropdownMenuItem<Servico>(
-                          value: value,
-                          child: Text(value.servico));
+                          return DropdownMenuItem<Servico>(
+                              value: (value),
+                              child: Text(value.servico));                          
                     }).toList()
                 ),
               );
