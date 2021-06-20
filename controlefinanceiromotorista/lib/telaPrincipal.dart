@@ -28,7 +28,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
 
   void _showTelaLancamentos() async{
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => TelaLancamento()));
+        MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id)));
   }
 
   @override

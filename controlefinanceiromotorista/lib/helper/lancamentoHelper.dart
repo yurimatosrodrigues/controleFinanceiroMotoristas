@@ -102,7 +102,7 @@ class LancamentoHelper {
     }
   }
 
-  Future<Lancamento> saveCondutor(Lancamento lancamento) async {
+  Future<Lancamento> saveLancamento(Lancamento lancamento) async {
     try {
       if (lancamento.id == null) {
         return createLancamento(lancamento);
@@ -114,7 +114,7 @@ class LancamentoHelper {
     }
   }
 
-  Future<void> deleteCondutor(Lancamento lancamento) async {
+  Future<void> deleteLancamento(Lancamento lancamento) async {
     try {
       Map map = lancamento.toMap();
       http.Response response = await http.delete(Uri.parse(apiUrl + '/delete'),
@@ -136,7 +136,7 @@ class Lancamento {
   int idCondutor;
   int idServico;
   int entrada;
-  double saida;
+  double valor;
   DateTime data;
   String descricao;
   String infoAdicional;
@@ -146,7 +146,7 @@ class Lancamento {
         int idCondutor,
         int idServico,
         int entrada,
-        double saida,
+        double valor,
         DateTime data,
         String descricao,
         String infoAdicional}) {
@@ -154,7 +154,7 @@ class Lancamento {
     this.idCondutor = idCondutor;
     this.idServico = idServico;
     this.entrada = entrada;
-    this.saida = saida;
+    this.valor = valor;
     this.data = data;
     this.descricao = descricao;
     this.infoAdicional = infoAdicional;
@@ -165,15 +165,17 @@ class Lancamento {
     idCondutor = map['idCondutor'];
     idServico = map['idServico'];
     entrada = map['entrada'];
-    saida = map['saida'];
+    valor = map['valor'];
     data = DateTime.parse(map['data']);
     descricao = map['descricao'];
     infoAdicional = map['infoAdicional'];
   }
   Map toMap() {
     Map<String, Object> map = {
+      'idCondutor': idCondutor,
+      'idServico': idServico,
       'entrada': entrada,
-      'saida': saida,
+      'valor': valor,
       'data': DateFormat("yyyy-MM-dd").format(data),
       'descricao': descricao,
       'infoAdicional': infoAdicional
