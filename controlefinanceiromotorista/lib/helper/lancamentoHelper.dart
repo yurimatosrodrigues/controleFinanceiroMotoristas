@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:controlefinanceiromotorista/helper/servicoHelper.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -13,9 +14,9 @@ class LancamentoHelper {
       http.Response response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
-        List<Lancamento> Lancamentos =
+        List<Lancamento> lancamentos =
         body.map((dynamic map) => Lancamento.from(map));
-        return Lancamentos;
+        return lancamentos;
       } else if (response.statusCode == 403) {
         throw utf8.decode(response.bodyBytes);
       } else {
@@ -26,13 +27,17 @@ class LancamentoHelper {
     }
   }
 
-  Future<Lancamento> getLancamentoByCondutor(int idCondutor) async {
+  Future<List<Lancamento>> getLancamentoByCondutor(int idCondutor) async {
     try {
       http.Response response = await http
           .get(Uri.parse(apiUrl + '/condutor/' + idCondutor.toString()));
       if (response.statusCode == 200) {
-        dynamic body = json.decode(utf8.decode(response.bodyBytes));
-        return Lancamento.from(body);
+        List<dynamic> body = json.decode(utf8.decode(response.bodyBytes));
+        List<Lancamento> lancamentos = [];
+        body.forEach((element) {           
+          lancamentos.add(Lancamento.from(element));
+        });
+        return lancamentos;
       } else if (response.statusCode == 403) {
         throw utf8.decode(response.bodyBytes);
       } else {
@@ -134,6 +139,7 @@ class LancamentoHelper {
 class Lancamento {
   int id;
   int idCondutor;
+  Servico servico;
   int idServico;
   int entrada;
   double valor;
@@ -144,6 +150,7 @@ class Lancamento {
   Lancamento(
       {int id,
         int idCondutor,
+        Servico servico,
         int idServico,
         int entrada,
         double valor,
@@ -152,6 +159,7 @@ class Lancamento {
         String infoAdicional}) {
     this.id = id;
     this.idCondutor = idCondutor;
+    this.servico = servico;
     this.idServico = idServico;
     this.entrada = entrada;
     this.valor = valor;
@@ -163,6 +171,7 @@ class Lancamento {
   Lancamento.from(Map map) {
     id = map['id'];
     idCondutor = map['idCondutor'];
+    servico = Servico.from(map['servico']);
     idServico = map['idServico'];
     entrada = map['entrada'];
     valor = map['valor'];
@@ -173,6 +182,7 @@ class Lancamento {
   Map toMap() {
     Map<String, Object> map = {
       'idCondutor': idCondutor,
+      'servico' : servico,
       'idServico': idServico,
       'entrada': entrada,
       'valor': valor,
