@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:controlefinanceiromotorista/helper/lancamentoHelper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:controlefinanceiromotorista/helper/condutorHelper.dart';
 import 'package:controlefinanceiromotorista/telaCadastro.dart';
 import 'package:controlefinanceiromotorista/telaLancamento.dart';
+
+import 'package:intl/intl.dart';
 
 class telaPrincipal extends StatefulWidget {
   final Condutor condutor;
@@ -18,18 +21,100 @@ class telaPrincipal extends StatefulWidget {
 class _telaPrincipalState extends State<telaPrincipal> {
   Condutor _condutor;
 
+  LancamentoHelper _lancamentoHelper = LancamentoHelper();  
+  Future<List<Lancamento>> _futureLancamentos;
+  List<Lancamento> _lancamentos;
+
+  final DateFormat _formatoData = DateFormat("dd/MM/yyyy");
+
   @override
   void initState() {
     super.initState();
     if (widget.condutor != null) {
       _condutor = Condutor.from(widget.condutor.toMap());
     }
+    _futureLancamentos = _lancamentoHelper.getLancamentoByCondutor(_condutor.id);
   }
 
   void _showTelaLancamentos() async{
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id)));
   }
+
+  Widget _buildListaLancamentos(){
+    return FutureBuilder<List<Lancamento>>(
+      future: _futureLancamentos,
+      builder: (context, snapshot){
+        switch(snapshot.connectionState){
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+            return Center(child: CircularProgressIndicator());
+          default:
+            if(snapshot.hasError){
+              return Text('Erro ao carregar lançamentos.');
+            }
+            else{     
+              _lancamentos = snapshot.data;   
+              
+              return ListView.builder(                
+                itemCount: _lancamentos.length,
+                itemBuilder: (context, index){
+                  return _buildCardLancamento(context,index);
+                });
+            }
+        }
+      },
+    );
+  }
+
+  Widget _buildCardLancamento(context, index){
+    return GestureDetector(
+      child: Card(
+        child: Padding(
+          padding: EdgeInsets.all(15.0),
+          child: Row(
+            children: [
+              Container(         
+                width: 130,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _formatoData.format(_lancamentos[index].data),
+                      style: TextStyle(
+                        fontSize: 15.0
+                      ),
+                    ),
+                    Text(
+                      _lancamentos[index].servico.servico,
+                      style: TextStyle(                        
+                        fontSize: 20.0
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 100),
+                alignment: Alignment.center,
+                child: Text(
+                  'R\$ ' + _lancamentos[index].valor.toString(),
+                  style: TextStyle(
+                        fontSize: 30.0,
+                        color: _lancamentos[index].entrada == 1 ? 
+                          Colors.green : 
+                          Colors.red
+                      ),
+                ),
+              )
+            ],
+          ),
+        )         
+      )
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,18 +170,14 @@ class _telaPrincipalState extends State<telaPrincipal> {
         title: Text(("Tela Principal")),
         backgroundColor: Colors.blueAccent,
       ),
-      body: Container(
-        child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            backgroundColor: Colors.blueAccent,
-            onPressed: (){
-              _showTelaLancamentos();
-            },
-
-          ),
-        )
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+        onPressed: (){
+          _showTelaLancamentos();
+        },
       ),
-    );
+      body: _buildListaLancamentos()
+  );
   }
 }
