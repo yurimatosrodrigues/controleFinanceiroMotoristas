@@ -71,21 +71,23 @@ class _telaPrincipalState extends State<telaPrincipal> {
     return GestureDetector(
       child: Card(
         child: Padding(
-          padding: EdgeInsets.all(5.0),
+          padding: EdgeInsets.all(15.0),
           child: Row(
             children: [
-              Container(
+              Container(         
+                width: 130,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _formatoData.format(_lancamentos[index].data),
                       style: TextStyle(
-                        fontSize: 20.0
+                        fontSize: 15.0
                       ),
                     ),
                     Text(
                       _lancamentos[index].servico.servico,
-                      style: TextStyle(
+                      style: TextStyle(                        
                         fontSize: 20.0
                       ),
                     ),
@@ -93,11 +95,15 @@ class _telaPrincipalState extends State<telaPrincipal> {
                 ),
               ),
               Container(
+                padding: EdgeInsets.only(left: 100),
                 alignment: Alignment.center,
                 child: Text(
                   'R\$ ' + _lancamentos[index].valor.toString(),
                   style: TextStyle(
-                        fontSize: 40.0
+                        fontSize: 30.0,
+                        color: _lancamentos[index].entrada == 1 ? 
+                          Colors.green : 
+                          Colors.red
                       ),
                 ),
               )
