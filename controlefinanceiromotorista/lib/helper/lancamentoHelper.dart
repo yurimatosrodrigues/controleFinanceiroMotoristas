@@ -186,8 +186,8 @@ class Lancamento {
   }
   Map toMap() {
     Map<String, Object> map = {
-      'idCondutor': idCondutor,
-      'servico' : servico.toMap(),
+      'idCondutor': idCondutor,      
+      'servico' :(servico!= null) ? servico.toMap() : null ,      
       'idServico': idServico,
       'entrada': entrada,
       'valor': valor,
