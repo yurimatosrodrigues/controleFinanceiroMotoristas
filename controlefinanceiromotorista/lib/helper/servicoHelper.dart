@@ -45,6 +45,7 @@ class Servico {
     Map<String, Object> map = {'servico': servico};
     if (id != null) {
       map['id'] = id;
+      map['servico'] = servico;
     }
     return map;
   }

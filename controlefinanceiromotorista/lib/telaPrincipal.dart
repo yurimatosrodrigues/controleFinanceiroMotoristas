@@ -43,15 +43,9 @@ class _telaPrincipalState extends State<telaPrincipal> {
     });
   }
 
-  void _showTelaLancamentos({Lancamento lancamento}) async{
-    //Navigator.push(context, MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id, lancamento: lancamento)));
+  void _showTelaLancamentos({Lancamento lancamento}) async{    
     final _recLancamento = await Navigator.push(context, 
-      MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id, lancamento: lancamento)));
-    //if(_recLancamento != null){
-     // if(lancamento != null){_lancamentoHelper.updateLancamento(_recLancamento);}
-      //else{_lancamentoHelper.saveLancamento(_recLancamento);}
-      
-    //}        
+      MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id, lancamento: lancamento)));        
     _getTodosLancamentos();    
   }
 
@@ -68,7 +62,8 @@ class _telaPrincipalState extends State<telaPrincipal> {
               return Text('Erro ao carregar lançamentos.');
             }
             else{     
-              _lancamentos = snapshot.data;   
+              _lancamentos = snapshot.data;
+              _lancamentos.sort((a, b) => a.data.compareTo(b.data));
               
               return ListView.builder(                
                 itemCount: _lancamentos.length,
@@ -102,6 +97,23 @@ class _telaPrincipalState extends State<telaPrincipal> {
                     onPressed: (){
                       Navigator.pop(context);
                       _showTelaLancamentos(lancamento: _lancamentos[index]);
+                    },
+                  )
+                ),
+
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: TextButton(
+                    child: Text('Excluir',
+                    style: TextStyle(color: Colors.red,
+                    fontSize: 20),                    
+                    ),
+                    onPressed: (){
+                      _lancamentoHelper.deleteLancamento(_lancamentos[index]);
+                        setState(() {
+                          _lancamentos.removeAt(index);
+                          Navigator.pop(context);
+                        });
                     },
                   )
                 )

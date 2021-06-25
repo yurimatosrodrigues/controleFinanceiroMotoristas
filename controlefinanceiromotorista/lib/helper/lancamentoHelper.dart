@@ -187,7 +187,7 @@ class Lancamento {
   Map toMap() {
     Map<String, Object> map = {
       'idCondutor': idCondutor,
-      'servico' : servico,
+      'servico' : servico.toMap(),
       'idServico': idServico,
       'entrada': entrada,
       'valor': valor,
