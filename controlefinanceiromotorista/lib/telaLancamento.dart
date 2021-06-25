@@ -25,9 +25,9 @@ class _TelaLancamentoState extends State<TelaLancamento> {
   Future<List<Servico>> _futureServicos;
   List<Servico> _servicos = [];  
   List<String> _entradaSaida = ['Entrada', 'Saída'];
-  
-  Condutor _condutor;
-  Servico _valueDropDownService;
+    
+  Servico _valueDropDownService;  
+
   String _valueDropDownEntradaSaida;
 
   TextEditingController _valorController = TextEditingController();
@@ -35,6 +35,7 @@ class _TelaLancamentoState extends State<TelaLancamento> {
   TextEditingController _dataController = TextEditingController();
 
   bool _saving = false;
+  bool _editing = false;
 
   Color _corValor = Colors.black;
 
@@ -49,22 +50,22 @@ class _TelaLancamentoState extends State<TelaLancamento> {
 
   void initState(){
     super.initState();
+    _futureServicos = _servicoHelper.getServicos();
+    
+
     if (widget.lancamento != null){
-      _lancamento = Lancamento.from(widget.lancamento.toMap());
-      _condutor.id = _lancamento.idCondutor;
-      _valueDropDownService.id = _lancamento.idServico;
+      _editing = true;
+      _lancamento = Lancamento.from(widget.lancamento.toMap());       
       _valueDropDownEntradaSaida = _lancamento.entrada == 1 ? 'Entrada' : 'Saída';
       _valorController.text = _lancamento.valor.toString();
       _descricaoController.text = _lancamento.descricao;
       _dataController.text = _formatoData.format(_lancamento.data);
     }
     else{    
-    _lancamento = Lancamento();    
+    _lancamento = Lancamento();        
+    }
     _lancamento.idCondutor = widget.idCondutor;
-    }        
-    _futureServicos = _servicoHelper.getServicos();
   }
-
 
   Widget _buildIcon(){
     return Container(
@@ -89,8 +90,9 @@ class _TelaLancamentoState extends State<TelaLancamento> {
             if(snapshot.hasError){
               return Text('Erro ao carregar serviços.');
             }
-            else{              
-              _servicos = snapshot.data;              
+            else{ 
+              _servicos = snapshot.data;
+              
               return Container(
                 padding: EdgeInsets.only(left: 16, right: 16, top: 5),
                 width: 365, height: 60,
@@ -113,14 +115,14 @@ class _TelaLancamentoState extends State<TelaLancamento> {
                       setState(() {
                         _valueDropDownService = servico;
                         _lancamento.idServico = servico.id;
-                    });                          
-                    }                     
+                    });
+                    } 
                   }, 
                   items: _servicos
                       .map<DropdownMenuItem<Servico>>((Servico value) {
                         return DropdownMenuItem<Servico>(
                             value: (value),
-                            child: Text(value.servico));                          
+                            child: Text(value.servico));
                   }).toList()
                 ),
               );

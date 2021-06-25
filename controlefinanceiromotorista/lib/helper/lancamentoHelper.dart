@@ -171,7 +171,12 @@ class Lancamento {
   Lancamento.from(Map map) {
     id = map['id'];
     idCondutor = map['idCondutor'];
-    servico = Servico.from(map['servico']);
+    if (map['servico'].runtimeType.toString() == 'Servico'){
+      servico = map['servico'];
+    }
+    else{
+      servico = Servico.from(map['servico']);
+    }
     idServico = map['idServico'];
     entrada = map['entrada'];
     valor = map['valor'];

@@ -35,10 +35,24 @@ class _telaPrincipalState extends State<telaPrincipal> {
     }
     _futureLancamentos = _lancamentoHelper.getLancamentoByCondutor(_condutor.id);
   }
+  
+   void _getTodosLancamentos(){
+    setState((){
+      _futureLancamentos = _lancamentoHelper.getLancamentoByCondutor(_condutor.id);
+      _buildListaLancamentos();
+    });
+  }
 
-  void _showTelaLancamentos() async{
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id)));
+  void _showTelaLancamentos({Lancamento lancamento}) async{
+    //Navigator.push(context, MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id, lancamento: lancamento)));
+    final _recLancamento = await Navigator.push(context, 
+      MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id, lancamento: lancamento)));
+    //if(_recLancamento != null){
+     // if(lancamento != null){_lancamentoHelper.updateLancamento(_recLancamento);}
+      //else{_lancamentoHelper.saveLancamento(_recLancamento);}
+      
+    //}        
+    _getTodosLancamentos();    
   }
 
   Widget _buildListaLancamentos(){
@@ -67,8 +81,43 @@ class _telaPrincipalState extends State<telaPrincipal> {
     );
   }
 
+  void _showOptions(BuildContext context, int index){
+    showModalBottomSheet(context: context, 
+    builder: (context){
+      return BottomSheet(onClosing: (){}, 
+        builder: (context){
+          return Container(
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: TextButton(
+                    child: Text('Editar',
+                    style: TextStyle(color: Colors.lightBlueAccent,
+                    fontSize: 20),
+                    
+                    ),
+                    onPressed: (){
+                      Navigator.pop(context);
+                      _showTelaLancamentos(lancamento: _lancamentos[index]);
+                    },
+                  )
+                )
+              ],
+            ),
+          );
+        });
+
+    });
+  }
+
   Widget _buildCardLancamento(context, index){
     return GestureDetector(
+      onTap: (){
+        _showOptions(context,index);
+      },
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(15.0),
@@ -174,7 +223,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
         child: Icon(Icons.add),
         backgroundColor: Colors.blueAccent,
         onPressed: (){
-          _showTelaLancamentos();
+          _showTelaLancamentos();                 
         },
       ),
       body: _buildListaLancamentos()
