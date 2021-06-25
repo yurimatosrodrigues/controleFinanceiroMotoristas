@@ -54,6 +54,7 @@ class _TelaLancamentoState extends State<TelaLancamento> {
     if (widget.lancamento != null){      
       _lancamento = Lancamento.from(widget.lancamento.toMap());       
       _valueDropDownEntradaSaida = _lancamento.entrada == 1 ? 'Entrada' : 'Saída';
+      _corValor = _lancamento.entrada == 1 ? Colors.green : Colors.red;
       _valorController.text = _lancamento.valor.toString();
       _descricaoController.text = _lancamento.descricao;
       _dataController.text = _formatoData.format(_lancamento.data);
@@ -184,7 +185,7 @@ class _TelaLancamentoState extends State<TelaLancamento> {
       keyboardType: TextInputType.numberWithOptions(decimal:true),
       onChanged: (text){
         setState((){
-          _lancamento.valor = double.tryParse(text);
+          _lancamento.valor = double.tryParse(text).abs();
         });
       },
     );

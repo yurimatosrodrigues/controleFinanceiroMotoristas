@@ -168,19 +168,22 @@ class _telaPrincipalState extends State<telaPrincipal> {
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(left: 100),
-                alignment: Alignment.center,
-                child: Text(
-                  'R\$ ' + _lancamentos[index].valor.toString(),
-                  style: TextStyle(
-                        fontSize: 30.0,
-                        color: _lancamentos[index].entrada == 1 ? 
-                          Colors.green : 
-                          Colors.red
-                      ),
-                ),
+              Flexible(child: 
+                Container(
+                  padding: EdgeInsets.only(left: 80),                                  
+                  child: Text(
+                    'R\$ ' + _lancamentos[index].valor.toStringAsFixed(2),
+                    overflow: TextOverflow.fade,                  
+                    style: TextStyle(
+                          fontSize: 30.0,                          
+                          color: _lancamentos[index].entrada == 1 ? 
+                            Colors.green : 
+                            Colors.red
+                        ),
+                  ),
+                )
               )
+              
             ],
           ),
         )         
@@ -191,7 +194,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
   void _updateAppBarTitle(bool visible){
     setState(() {
       if(visible){
-      _appBarTitle = 'Saldo do período: R\$ $_somaLancamentos';
+      _appBarTitle = 'Saldo do período: R\$ ' + _somaLancamentos.toStringAsFixed(2);
     }
     else{
       _appBarTitle = 'Tela Principal';
@@ -258,7 +261,9 @@ class _telaPrincipalState extends State<telaPrincipal> {
               _updateAppBarTitle(_saldoVisible);
             })            
         ],
-        title: Text(_appBarTitle),
+        title: Text(_appBarTitle,
+          style: TextStyle(fontSize: 18.0)
+        ),
         backgroundColor: Colors.blueAccent,
         toolbarHeight: 70, // default is 56        
       ),
