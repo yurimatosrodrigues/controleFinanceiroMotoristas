@@ -4,7 +4,6 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-import 'helper/condutorHelper.dart';
 import 'helper/servicoHelper.dart';
 
 class TelaLancamento extends StatefulWidget {
@@ -34,8 +33,7 @@ class _TelaLancamentoState extends State<TelaLancamento> {
   TextEditingController _descricaoController = TextEditingController();
   TextEditingController _dataController = TextEditingController();
 
-  bool _saving = false;
-  bool _editing = false;
+  bool _saving = false;  
 
   Color _corValor = Colors.black;
 
@@ -53,8 +51,7 @@ class _TelaLancamentoState extends State<TelaLancamento> {
     _futureServicos = _servicoHelper.getServicos();
     
 
-    if (widget.lancamento != null){
-      _editing = true;
+    if (widget.lancamento != null){      
       _lancamento = Lancamento.from(widget.lancamento.toMap());       
       _valueDropDownEntradaSaida = _lancamento.entrada == 1 ? 'Entrada' : 'Saída';
       _valorController.text = _lancamento.valor.toString();

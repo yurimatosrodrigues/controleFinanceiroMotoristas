@@ -25,6 +25,10 @@ class _telaPrincipalState extends State<telaPrincipal> {
   Future<List<Lancamento>> _futureLancamentos;
   List<Lancamento> _lancamentos;
 
+  double _somaLancamentos;
+  String _appBarTitle = 'Tela Principal';
+  bool _saldoVisible = false;
+
   final DateFormat _formatoData = DateFormat("dd/MM/yyyy");
 
   @override
@@ -33,20 +37,20 @@ class _telaPrincipalState extends State<telaPrincipal> {
     if (widget.condutor != null) {
       _condutor = Condutor.from(widget.condutor.toMap());
     }
-    _futureLancamentos = _lancamentoHelper.getLancamentoByCondutor(_condutor.id);
+    _futureLancamentos = _lancamentoHelper.getLancamentoByCondutor(_condutor.id);    
   }
   
    void _getTodosLancamentos(){
     setState((){
       _futureLancamentos = _lancamentoHelper.getLancamentoByCondutor(_condutor.id);
-      _buildListaLancamentos();
+      _buildListaLancamentos();      
     });
   }
 
   void _showTelaLancamentos({Lancamento lancamento}) async{    
     final _recLancamento = await Navigator.push(context, 
       MaterialPageRoute(builder: (context) => TelaLancamento(_condutor.id, lancamento: lancamento)));        
-    _getTodosLancamentos();    
+    _getTodosLancamentos();       
   }
 
   Widget _buildListaLancamentos(){
@@ -67,7 +71,16 @@ class _telaPrincipalState extends State<telaPrincipal> {
               
               return ListView.builder(                
                 itemCount: _lancamentos.length,
-                itemBuilder: (context, index){
+                itemBuilder: (context, index){    
+                  _somaLancamentos = _lancamentos.fold(0, (sum, item){    
+                    if(item.entrada == 1){
+                      sum = sum + item.valor;
+                    }
+                    else{
+                      sum = sum + (item.valor * -1);
+                    }                    
+                    return sum;
+                  });
                   return _buildCardLancamento(context,index);
                 });
             }
@@ -96,7 +109,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
                     ),
                     onPressed: (){
                       Navigator.pop(context);
-                      _showTelaLancamentos(lancamento: _lancamentos[index]);
+                      _showTelaLancamentos(lancamento: _lancamentos[index]);                                            
                     },
                   )
                 ),
@@ -109,7 +122,7 @@ class _telaPrincipalState extends State<telaPrincipal> {
                     fontSize: 20),                    
                     ),
                     onPressed: (){
-                      _lancamentoHelper.deleteLancamento(_lancamentos[index]);
+                      _lancamentoHelper.deleteLancamento(_lancamentos[index]);                      
                         setState(() {
                           _lancamentos.removeAt(index);
                           Navigator.pop(context);
@@ -175,7 +188,16 @@ class _telaPrincipalState extends State<telaPrincipal> {
     );
   }
 
-
+  void _updateAppBarTitle(bool visible){
+    setState(() {
+      if(visible){
+      _appBarTitle = 'Saldo do período: R\$ $_somaLancamentos';
+    }
+    else{
+      _appBarTitle = 'Tela Principal';
+    }    
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,8 +250,17 @@ class _telaPrincipalState extends State<telaPrincipal> {
         ),
       ),
       appBar: AppBar(
-        title: Text(("Tela Principal")),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.visibility),
+            onPressed: (){
+              _saldoVisible = !_saldoVisible;
+              _updateAppBarTitle(_saldoVisible);
+            })            
+        ],
+        title: Text(_appBarTitle),
         backgroundColor: Colors.blueAccent,
+        toolbarHeight: 70, // default is 56        
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -239,6 +270,6 @@ class _telaPrincipalState extends State<telaPrincipal> {
         },
       ),
       body: _buildListaLancamentos()
-  );
-  }
+    );
+    }
 }
