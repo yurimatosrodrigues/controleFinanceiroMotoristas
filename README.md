@@ -8,12 +8,14 @@ Status:<br/>
 </h2> 
 
 <h3>Descrição: 
-  Pensando na dor de muitos motorista profissionais em não possuirem uma ferramenta para controlar as receitas e despesas, propus ao grupo do curso de Especialização em Desenvolvimento Mobile desenvolvermos um app para o projeto final.
+  Pensando na dor de muitos motoristas profissionais em não possuirem uma ferramenta para controlar as receitas e despesas, propus ao grupo do curso de Especialização em Desenvolvimento Mobile o desenvolvimento um app para o projeto final.  
+</h3>
+<h3>
   O aplicativo permite que o condutor faça um cadastro de seus dados principais e entre com login e senha. Na página principal, ele verá todas as entradas e saídas do período, e na parte superior o valor total.
   O usuário pode cadastrar, editar e excluir um lançamento feito, bem como classificá-lo por tipo de serviço.
   O front-end foi desenvolvido em maior grande parte por mim (Yuri Matos) e o back-end desenvolvido pelo Bruno Pedroni (bpedroni).
   O back-end encontra-se hospedado no Heroku.
-</h3>
+ </h3>
   
 ### Tecnologias utilizadas:
 <table>
